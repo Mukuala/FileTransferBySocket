@@ -20,6 +20,16 @@
         "runtime": {
           "bin/placeholder/AIT.PE02.Client.Core.dll": {}
         }
+      },
+      "AIT.PE02.Server.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "compile": {
+          "bin/placeholder/AIT.PE02.Server.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/AIT.PE02.Server.Core.dll": {}
+        }
       }
     }
   },
@@ -55,11 +65,17 @@
       "type": "project",
       "path": "../AIT.PE02.Client.Core/AIT.PE02.Client.Core.csproj",
       "msbuildProject": "../AIT.PE02.Client.Core/AIT.PE02.Client.Core.csproj"
+    },
+    "AIT.PE02.Server.Core/1.0.0": {
+      "type": "project",
+      "path": "../AIT.PE02.CORE/AIT.PE02.Server.Core.csproj",
+      "msbuildProject": "../AIT.PE02.CORE/AIT.PE02.Server.Core.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
       "AIT.PE02.Client.Core >= 1.0.0",
+      "AIT.PE02.Server.Core >= 1.0.0",
       "Newtonsoft.Json >= 13.0.1"
     ]
   },
@@ -102,6 +118,9 @@
           "projectReferences": {
             "D:\\AITPE02\\AIT.PE02\\AIT.PE02.Client.Core\\AIT.PE02.Client.Core.csproj": {
               "projectPath": "D:\\AITPE02\\AIT.PE02\\AIT.PE02.Client.Core\\AIT.PE02.Client.Core.csproj"
+            },
+            "D:\\AITPE02\\AIT.PE02\\AIT.PE02.CORE\\AIT.PE02.Server.Core.csproj": {
+              "projectPath": "D:\\AITPE02\\AIT.PE02\\AIT.PE02.CORE\\AIT.PE02.Server.Core.csproj"
             }
           }
         }

@@ -29,7 +29,7 @@
                     <Button x:Name="btnFolderUp" Content="..." Margin="20,41,541,533" Click="btnFolderUp_Click"/>
                     <Label Height="28" Content="Remote files" Margin="0,315,656,248"/>
                     <ListBox x:Name="lstFolders" Width="200" Height="250" Margin="10,60,531,281" MouseDoubleClick="lstFolders_MouseDoubleClick" SelectionChanged="lstFolders_SelectionChanged"/>
-                    <ListBox x:Name="lstFiles" Width="200" Height="250" Margin="10,343,531,-2"/>
+                    <ListBox x:Name="lstFiles" Width="200" Height="250" Margin="10,343,531,-2" SelectionChanged="lstFiles_SelectionChanged"/>
                 </Grid>
             </GroupBox>
             <GroupBox Header="File info" Height="150" Margin="249,237,31,387">
@@ -75,7 +75,7 @@
             </GroupBox>
             <GroupBox Header="File upload" Height="100" Margin="249,645,31,29">
                 <Grid>
-                    <Button Height="30" Width="80" Content="Select file" x:Name="btnFileUpload" Margin="24,19,387,28"/>
+                    <Button Height="30" Width="80" Content="Select file" x:Name="btnFileUpload" Margin="24,19,387,28" Click="btnFileUpload_Click"/>
                 </Grid>
             </GroupBox>
         </Grid>

@@ -9,6 +9,7 @@
       "AIT.PE02.Client.Wpf/1.0.0": {
         "dependencies": {
           "AIT.PE02.Client.Core": "1.0.0",
+          "AIT.PE02.Server.Core": "1.0.0",
           "Newtonsoft.Json": "13.0.1"
         },
         "runtime": {
@@ -27,6 +28,11 @@
         "runtime": {
           "AIT.PE02.Client.Core.dll": {}
         }
+      },
+      "AIT.PE02.Server.Core/1.0.0": {
+        "runtime": {
+          "AIT.PE02.Server.Core.dll": {}
+        }
       }
     }
   },
@@ -44,6 +50,11 @@
       "hashPath": "newtonsoft.json.13.0.1.nupkg.sha512"
     },
     "AIT.PE02.Client.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AIT.PE02.Server.Core/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

@@ -212,6 +212,23 @@ namespace AIT.PE02.WPF
                 txbCommunications.Text = $"{client.Name} ({client.Id}) requested CDDIR {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 return $"CDDIR|*|{stringSubdirs}|*|{stringDirfiles}|*|{client.CurrentMap}##EOM";
             }
+            else if (instruction.Length > 3 && instruction.Substring(0, 3) == "GET")
+            {
+                
+                parts = instruction.Split("|*|");
+                if (parts.Length != 3)
+                    return "ERROR##EOM";
+
+                var client = GetCurrentClient(parts[1]);
+                FileInfo file = new FileInfo(client.CurrentMap + "\\" + parts[2]);
+                FileFTS fileFTS = new FileFTS { Name = file.Name, Fullpath = file.FullName, CreationTime = file.CreationTime, Filesize = file.Length };
+                var fileToSend = JsonConvert.SerializeObject(fileFTS);
+                //var stringFileinfo = JsonConvert.SerializeObject(file);
+                txbCommunications.Text = $"{client.Name} ({client.Id}) requested GET {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                return $"GET|*|{fileToSend}|*|{client.CurrentMap}##EOM";
+
+
+            }
             return "ERROR##EOM";
         }
 
@@ -269,7 +286,7 @@ namespace AIT.PE02.WPF
             dirfileslist.Clear();
 
             var mainDirectory = new DirectoryInfo(path);
-            var subDirectories = mainDirectory.GetDirectories("*", SearchOption.AllDirectories);
+            var subDirectories = mainDirectory.GetDirectories("*", SearchOption.TopDirectoryOnly);
             var maindirFiles = mainDirectory.GetFiles();
             foreach (var item in subDirectories)
             {

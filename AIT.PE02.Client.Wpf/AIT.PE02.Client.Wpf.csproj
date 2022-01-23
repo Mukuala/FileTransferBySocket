@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AIT.PE02.Client.Core\AIT.PE02.Client.Core.csproj" />
+    <ProjectReference Include="..\AIT.PE02.CORE\AIT.PE02.Server.Core.csproj" />
   </ItemGroup>
 
 </Project>

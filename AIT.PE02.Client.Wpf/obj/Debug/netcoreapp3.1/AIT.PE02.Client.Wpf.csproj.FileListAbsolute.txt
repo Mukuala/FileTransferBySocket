@@ -24,3 +24,5 @@ D:\AITPE02\AIT.PE02\AIT.PE02.Client.Wpf\obj\Debug\netcoreapp3.1\AIT.PE02.Client.
 D:\AITPE02\AIT.PE02\AIT.PE02.Client.Wpf\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
 D:\AITPE02\AIT.PE02\AIT.PE02.Client.Wpf\obj\Debug\netcoreapp3.1\MKDIRModal.g.cs
 D:\AITPE02\AIT.PE02\AIT.PE02.Client.Wpf\obj\Debug\netcoreapp3.1\MKDIRModal.baml
+D:\AITPE02\AIT.PE02\AIT.PE02.Client.Wpf\bin\Debug\netcoreapp3.1\AIT.PE02.Server.Core.dll
+D:\AITPE02\AIT.PE02\AIT.PE02.Client.Wpf\bin\Debug\netcoreapp3.1\AIT.PE02.Server.Core.pdb

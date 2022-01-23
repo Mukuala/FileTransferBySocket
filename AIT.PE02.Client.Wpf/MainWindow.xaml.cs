@@ -7,6 +7,8 @@ using AIT.PE02.Client.Core.Helpers;
 using System.IO;
 using Newtonsoft.Json;
 using System.Collections;
+using AIT.PE02.Server.Core.Entities;
+using Microsoft.Win32;
 
 namespace AIT.PE02.Client.Wpf
 {
@@ -225,6 +227,48 @@ namespace AIT.PE02.Client.Wpf
                 }
             }
         }
+        private void GET()
+        {
+            string message = $"GET|*|{txbGuid.Text}|*|{lstFiles.SelectedItem}##EOM";
+            string response = SendMessageToServer(message);
+            if (!string.IsNullOrWhiteSpace(response))
+            {
+                response = response.Replace("##EOM", "").Trim().ToUpper();
+                if (response.Contains("ERROR"))
+                {
+                    MessageBox.Show("ERROR");
+                }
+                else
+                {
+                    var parts = response.Split("|*|");
+                    var file = JsonConvert.DeserializeObject<FileFTS>(parts[1]);
+
+                    txbFiledate.Text = file.CreationTime.ToString();
+                    txbFilename.Text = file.Name;
+                    txbFilepath.Text = file.Fullpath;
+                    txbFilesize.Text = file.Filesize.ToString() + " B";
+                }
+            }
+        }
+        private void PUT()
+        {
+            {
+                string message = $"PUT|*|{txbGuid.Text}|*|{lstFiles.SelectedItem}##EOM";
+                string response = SendMessageToServer(message);
+                if (!string.IsNullOrWhiteSpace(response))
+                {
+                    response = response.Replace("##EOM", "").Trim().ToUpper();
+                    if (response.Contains("ERROR"))
+                    {
+                        MessageBox.Show("ERROR");
+                    }
+                    else
+                    {
+                        var parts = response.Split("|*|");
+                    }
+                }
+            }
+        }
 
         private void DoVisuals(bool isConnected)
         {
@@ -270,9 +314,44 @@ namespace AIT.PE02.Client.Wpf
                 txbFolderParent.Text = Directory.GetParent(txbActivePath.Text + "\\" + folderName).FullName;
                 txbFolderpath.Text = txbActivePath.Text + "\\" + folderName;
             }
-            txbFolderName.Text = "";
-            txbFolderParent.Text = "";
-            txbFolderpath.Text = "";
+            else
+            {
+                txbFolderName.Text = "";
+                txbFolderParent.Text = "";
+                txbFolderpath.Text = "";
+            }
+        }
+
+        private void lstFiles_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (lstFiles.SelectedItem != null)
+            {
+                //var fileName = lstFiles.SelectedItem.ToString();
+                //var file = txbActivePath.Text + "\\" + fileName;
+                //FileInfo fileInfo = new FileInfo(file);
+                //txbFiledate.Text = fileInfo.CreationTime.ToString();
+                //txbFilename.Text = fileInfo.Name;
+                //txbFilepath.Text = fileInfo.FullName;
+                //txbFilesize.Text = fileInfo.Length.ToString();
+                GET();
+            }
+            else
+            {
+                txbFiledate.Text = "";
+                txbFilename.Text = "";
+                txbFilepath.Text = "";
+                txbFilesize.Text = "";
+            }
+        }
+
+        private void btnFileUpload_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                FileInfo file = new FileInfo(openFileDialog.FileName);
+                //PUT()
+            }
 
         }
     }
