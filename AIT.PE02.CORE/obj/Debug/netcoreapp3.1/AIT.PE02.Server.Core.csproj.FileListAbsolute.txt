@@ -1,0 +1,10 @@
+D:\AITPE02\AIT.PE02\AIT.PE02.CORE\bin\Debug\netcoreapp3.1\AIT.PE02.Server.Core.deps.json
+D:\AITPE02\AIT.PE02\AIT.PE02.CORE\bin\Debug\netcoreapp3.1\AIT.PE02.Server.Core.dll
+D:\AITPE02\AIT.PE02\AIT.PE02.CORE\bin\Debug\netcoreapp3.1\AIT.PE02.Server.Core.pdb
+D:\AITPE02\AIT.PE02\AIT.PE02.CORE\obj\Debug\netcoreapp3.1\AIT.PE02.Server.Core.csproj.AssemblyReference.cache
+D:\AITPE02\AIT.PE02\AIT.PE02.CORE\obj\Debug\netcoreapp3.1\AIT.PE02.Server.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\AITPE02\AIT.PE02\AIT.PE02.CORE\obj\Debug\netcoreapp3.1\AIT.PE02.Server.Core.AssemblyInfoInputs.cache
+D:\AITPE02\AIT.PE02\AIT.PE02.CORE\obj\Debug\netcoreapp3.1\AIT.PE02.Server.Core.AssemblyInfo.cs
+D:\AITPE02\AIT.PE02\AIT.PE02.CORE\obj\Debug\netcoreapp3.1\AIT.PE02.Server.Core.csproj.CoreCompileInputs.cache
+D:\AITPE02\AIT.PE02\AIT.PE02.CORE\obj\Debug\netcoreapp3.1\AIT.PE02.Server.Core.dll
+D:\AITPE02\AIT.PE02\AIT.PE02.CORE\obj\Debug\netcoreapp3.1\AIT.PE02.Server.Core.pdb

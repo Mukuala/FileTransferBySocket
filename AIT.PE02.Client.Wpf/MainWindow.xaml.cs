@@ -4,6 +4,9 @@ using System.Windows;
 using System.Net;
 using System.Net.Sockets;
 using AIT.PE02.Client.Core.Helpers;
+using System.IO;
+using Newtonsoft.Json;
+using System.Collections;
 
 namespace AIT.PE02.Client.Wpf
 {
@@ -20,6 +23,27 @@ namespace AIT.PE02.Client.Wpf
         }
         Socket serverSocket;
         IPEndPoint serverEndpoint;
+        DirectoryInfo[] subdirs;
+        FileInfo[] dirfiles;
+        Guid guid;
+
+        #region Event Handlers
+        private void btnConnect_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtUsername.Text))
+            {
+                txtUsername.Focus();
+                return;
+            }
+            Connect();
+        }
+        private void btnDisconnect_Click(object sender, RoutedEventArgs e)
+        {
+            Disconnect();
+        }
+
+
+        #endregion
 
         private string SendMessageToServer(string message)
         {
@@ -74,11 +98,109 @@ namespace AIT.PE02.Client.Wpf
             }
 
         }
-        private void SaveConfig()
+
+        private void Connect()
         {
-            AppConfig.WriteConfig(txtIP.Text, int.Parse(cmbPorts.SelectedItem.ToString()));
+
+            string message = "CONNECT|*|" + txtUsername.Text + "##EOM";
+            string response = SendMessageToServer(message);
+            if (!string.IsNullOrWhiteSpace(response))
+            {
+                response = response.Replace("##EOM", "").Trim().ToUpper();
+                var parts = response.Split("|*|");
+                txbActivePath.Text = parts[5];
+                txbGuid.Text = parts[2];
+                lstFolders.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[3]);
+                lstFiles.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[4]);
+                DoVisuals(true);
+            }
+            else
+            {
+                MessageBox.Show("Server unreachable");
+                DoVisuals(false);
+            }
+
+
+        }
+        private void Disconnect()
+        {
+            string message = "CLOSE|*|" + txbGuid.Text + "##EOM";
+            string response = SendMessageToServer(message);
+            if (!string.IsNullOrWhiteSpace(response))
+            {
+                DoVisuals(false);
+            }
+            else
+            {
+                MessageBox.Show("Server unreachable");
+                DoVisuals(false);
+            }
+        }
+        public void MKDIR(string mapname)
+        {
+            string message = $"MKDIR|*|{txbGuid.Text}|*|{mapname}##EOM";
+            string response = SendMessageToServer(message);
+            if (!string.IsNullOrWhiteSpace(response))
+            {
+                response = response.Replace("##EOM", "").Trim().ToUpper();
+                var parts = response.Split("|*|");
+
+                lstFolders.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[1]);
+
+            }
+            else
+            {
+                MessageBox.Show("Server unreachable");
+                DoVisuals(false);
+            }
+
 
         }
 
+        private void DoVisuals(bool isConnected)
+        {
+            if (isConnected)
+            {
+                btnDisconnect.Visibility = Visibility.Visible;
+                btnConnect.Visibility = Visibility.Hidden;
+                grdFTS.Visibility = Visibility.Visible;
+                txtIP.IsEnabled = false;
+                txtUsername.IsEnabled = false;
+            }
+            else
+            {
+                btnDisconnect.Visibility = Visibility.Hidden;
+                btnConnect.Visibility = Visibility.Visible;
+                txtIP.IsEnabled = true;
+                txtIP.Text = null;
+                txtUsername.IsEnabled = true;
+                grdFTS.Visibility = Visibility.Hidden;
+                lstFiles.ItemsSource = null;
+                lstFolders.ItemsSource = null;
+                txbActivePath = null;
+                txbFolderName = null;
+                txbFolderParent = null;
+                txbFolderpath = null;
+                txbFiledate = null;
+                txbFilename = null;
+                txbFilepath = null;
+                txbFilesize = null;
+            }
+        }
+
+        private void btnAddNewMap_Click(object sender, RoutedEventArgs e)
+        {
+            MKDIRModal modalWindow = new MKDIRModal();
+            modalWindow.ShowDialog();
+            if (!modalWindow.IsActive)
+            {
+                var mapname = MKDIRModal.mapname;
+                if (!string.IsNullOrWhiteSpace(mapname))
+                {
+                    Directory.CreateDirectory(txbActivePath.Text + "\\" + mapname);
+                    MKDIR(mapname);
+                }
+            }
+        }
     }
 }
