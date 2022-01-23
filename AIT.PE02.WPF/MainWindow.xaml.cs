@@ -179,10 +179,40 @@ namespace AIT.PE02.WPF
                 var stringSubdirs = JsonConvert.SerializeObject(subdirlist);
                 txbCommunications.Text = $"{client.Name} ({client.Id}) requested MKDIR {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 return $"MKDIR|*|{stringSubdirs}|*|{client.CurrentMap}##EOM";
+            }
+            else if (instruction.Length > 4 && instruction.Substring(0, 4) == "CDUP")
+            {
+                string newAP = "";
+                parts = instruction.Split("|*|");
+                if (parts.Length != 2)
+                    return "ERROR##EOM";
 
+                var client = GetCurrentClient(parts[1]);
+                OneFolderUp(client.CurrentMap, out subdirlist, out dirfileslist, out newAP);
+                var stringSubdirs = JsonConvert.SerializeObject(subdirlist);
+                var stringDirfiles = JsonConvert.SerializeObject(dirfileslist);
+                client.CurrentMap = newAP;
+                txbCommunications.Text = $"{client.Name} ({client.Id}) requested CDUP, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                returnValue = $"CDUP|*|{stringSubdirs}|*|{stringDirfiles}|*|{client.CurrentMap}##EOM";
+                return returnValue;
+            }
+            else if (instruction.Length > 5 && instruction.Substring(0, 5) == "CDDIR")
+            {
+                string newAP = "";
+                parts = instruction.Split("|*|");
+                if (parts.Length != 3)
+                    return "ERROR##EOM";
+
+                var client = GetCurrentClient(parts[1]);
+                newAP = client.CurrentMap + "\\" + parts[2];
+                GetAllSubdirsAndFiles(newAP, out subdirlist, out dirfileslist);
+                var stringSubdirs = JsonConvert.SerializeObject(subdirlist);
+                var stringDirfiles = JsonConvert.SerializeObject(dirfileslist);
+                client.CurrentMap = newAP;
+                txbCommunications.Text = $"{client.Name} ({client.Id}) requested CDDIR {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                return $"CDDIR|*|{stringSubdirs}|*|{stringDirfiles}|*|{client.CurrentMap}##EOM";
             }
             return "ERROR##EOM";
-
         }
 
 
@@ -251,6 +281,24 @@ namespace AIT.PE02.WPF
             }
             subdirs = subdirlist;
             dirfiles = dirfileslist;
+        }
+        private void OneFolderUp(string AP, out List<string> subdirs, out List<string> dirfiles, out string newAP)
+        {
+            var folderUp = Directory.GetParent(AP).FullName;
+            if (AP.ToUpper() == txtBasepath.Text.ToUpper())
+            {
+                GetAllSubdirsAndFiles(AP, out subdirlist, out dirfileslist);
+                newAP = AP;
+                subdirs = subdirlist;
+                dirfiles = dirfileslist;
+            }
+            else
+            {
+                GetAllSubdirsAndFiles(folderUp, out subdirlist, out dirfileslist);
+                newAP = folderUp;
+                subdirs = subdirlist;
+                dirfiles = dirfileslist;
+            }
         }
         private Client GetCurrentClient(string id)
         {

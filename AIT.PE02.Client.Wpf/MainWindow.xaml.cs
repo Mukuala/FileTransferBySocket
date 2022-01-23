@@ -23,9 +23,6 @@ namespace AIT.PE02.Client.Wpf
         }
         Socket serverSocket;
         IPEndPoint serverEndpoint;
-        DirectoryInfo[] subdirs;
-        FileInfo[] dirfiles;
-        Guid guid;
 
         #region Event Handlers
         private void btnConnect_Click(object sender, RoutedEventArgs e)
@@ -41,7 +38,25 @@ namespace AIT.PE02.Client.Wpf
         {
             Disconnect();
         }
+        private void btnAddNewMap_Click(object sender, RoutedEventArgs e)
+        {
+            MKDIRModal modalWindow = new MKDIRModal();
+            modalWindow.ShowDialog();
+            if (!modalWindow.IsActive)
+            {
+                var mapname = MKDIRModal.mapname;
+                if (!string.IsNullOrWhiteSpace(mapname))
+                {
+                    Directory.CreateDirectory(txbActivePath.Text + "\\" + mapname);
+                    MKDIR(mapname);
+                }
+            }
+        }
 
+        private void btnFolderUp_Click(object sender, RoutedEventArgs e)
+        {
+            CDUP();
+        }
 
         #endregion
 
@@ -106,13 +121,20 @@ namespace AIT.PE02.Client.Wpf
             string response = SendMessageToServer(message);
             if (!string.IsNullOrWhiteSpace(response))
             {
-                response = response.Replace("##EOM", "").Trim().ToUpper();
-                var parts = response.Split("|*|");
-                txbActivePath.Text = parts[5];
-                txbGuid.Text = parts[2];
-                lstFolders.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[3]);
-                lstFiles.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[4]);
-                DoVisuals(true);
+                if (response.Contains("ERROR"))
+                {
+                    MessageBox.Show("ERROR");
+                }
+                else
+                {
+                    response = response.Replace("##EOM", "").Trim().ToUpper();
+                    var parts = response.Split("|*|");
+                    txbActivePath.Text = parts[5];
+                    txbGuid.Text = parts[2];
+                    lstFolders.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[3]);
+                    lstFiles.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[4]);
+                    DoVisuals(true);
+                }
             }
             else
             {
@@ -142,19 +164,66 @@ namespace AIT.PE02.Client.Wpf
             string response = SendMessageToServer(message);
             if (!string.IsNullOrWhiteSpace(response))
             {
-                response = response.Replace("##EOM", "").Trim().ToUpper();
-                var parts = response.Split("|*|");
+                if (response.Contains("ERROR"))
+                {
+                    MessageBox.Show("ERROR");
+                }
+                else
+                {
+                    response = response.Replace("##EOM", "").Trim().ToUpper();
+                    var parts = response.Split("|*|");
 
-                lstFolders.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[1]);
-
+                    lstFolders.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[1]);
+                }
             }
             else
             {
                 MessageBox.Show("Server unreachable");
                 DoVisuals(false);
             }
+        }
+        private void CDUP()
+        {
+            string message = $"CDUP|*|{txbGuid.Text}##EOM";
+            string response = SendMessageToServer(message);
+            if (!string.IsNullOrWhiteSpace(response))
+            {
+                if (response.Contains("ERROR"))
+                {
+                    MessageBox.Show("ERROR");
+                }
+                else
+                {
+                    response = response.Replace("##EOM", "").Trim().ToUpper();
+                    var parts = response.Split("|*|");
 
+                    txbActivePath.Text = parts[3];
+                    lstFolders.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[1]);
+                    lstFiles.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[2]);
 
+                }
+            }
+        }
+        private void CDDIR()
+        {
+            string message = $"CDDIR|*|{txbGuid.Text}|*|{lstFolders.SelectedItem}##EOM";
+            string response = SendMessageToServer(message);
+            if (!string.IsNullOrWhiteSpace(response))
+            {
+                response = response.Replace("##EOM", "").Trim().ToUpper();
+                if (response.Contains("ERROR"))
+                {
+                    MessageBox.Show("ERROR");
+                }
+                else
+                {
+                    var parts = response.Split("|*|");
+
+                    txbActivePath.Text = parts[3];
+                    lstFolders.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[1]);
+                    lstFiles.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[2]);
+                }
+            }
         }
 
         private void DoVisuals(bool isConnected)
@@ -172,35 +241,39 @@ namespace AIT.PE02.Client.Wpf
                 btnDisconnect.Visibility = Visibility.Hidden;
                 btnConnect.Visibility = Visibility.Visible;
                 txtIP.IsEnabled = true;
-                txtIP.Text = null;
                 txtUsername.IsEnabled = true;
                 grdFTS.Visibility = Visibility.Hidden;
                 lstFiles.ItemsSource = null;
                 lstFolders.ItemsSource = null;
-                txbActivePath = null;
-                txbFolderName = null;
-                txbFolderParent = null;
-                txbFolderpath = null;
-                txbFiledate = null;
-                txbFilename = null;
-                txbFilepath = null;
-                txbFilesize = null;
+                txbActivePath.Text = "";
+                txbFolderName.Text = "";
+                txbFolderParent.Text = "";
+                txbFolderpath.Text = "";
+                txbFiledate.Text = "";
+                txbFilename.Text = "";
+                txbFilepath.Text = "";
+                txbFilesize.Text = "";
             }
         }
 
-        private void btnAddNewMap_Click(object sender, RoutedEventArgs e)
+        private void lstFolders_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            MKDIRModal modalWindow = new MKDIRModal();
-            modalWindow.ShowDialog();
-            if (!modalWindow.IsActive)
+            CDDIR();
+        }
+
+        private void lstFolders_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (lstFolders.SelectedItem != null)
             {
-                var mapname = MKDIRModal.mapname;
-                if (!string.IsNullOrWhiteSpace(mapname))
-                {
-                    Directory.CreateDirectory(txbActivePath.Text + "\\" + mapname);
-                    MKDIR(mapname);
-                }
+                var folderName = lstFolders.SelectedItem.ToString();
+                txbFolderName.Text = folderName;
+                txbFolderParent.Text = Directory.GetParent(txbActivePath.Text + "\\" + folderName).FullName;
+                txbFolderpath.Text = txbActivePath.Text + "\\" + folderName;
             }
+            txbFolderName.Text = "";
+            txbFolderParent.Text = "";
+            txbFolderpath.Text = "";
+
         }
     }
 }

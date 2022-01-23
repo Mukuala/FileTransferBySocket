@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="820">
     <ScrollViewer>
-        <Grid Height="774">
+        <Grid Height="779">
             <GroupBox Header="Server configuration" HorizontalAlignment="Left" Height="120" Margin="10,10,0,0" VerticalAlignment="Top" Width="770" >
                 <Grid HorizontalAlignment="Left" Width="770" Height="110">
                     <TextBox x:Name="txtIP" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left" Margin="46,10,0,0" VerticalAlignment="Top" Width="145"/>
@@ -23,13 +23,12 @@
             </GroupBox>
             <GroupBox Header="FTS" Margin="10,140,0,0">
                 <Grid x:Name="grdFTS" Margin="10">
-                    <TextBlock x:Name="txbNewMapName" Visibility="Hidden" />
                     <Label Height="28" Width="80" Content="Active folder" Margin="5,7,656,556"/>
                     <TextBlock x:Name="txbActivePath" Background="Beige" Height="28" Margin="85,5,56,558"/>
                     <Button x:Name="btnAddNewMap" Height="28" FontSize="15" FontWeight="Bold" Width="30" Content="+" Margin="690,7,21,556" Click="btnAddNewMap_Click"/>
-                    <Label Height="28"  Content="Remote folders(double click to navigate)" Margin="5,38,508,525"/>
+                    <Button x:Name="btnFolderUp" Content="..." Margin="20,41,541,533" Click="btnFolderUp_Click"/>
                     <Label Height="28" Content="Remote files" Margin="0,315,656,248"/>
-                    <ListBox x:Name="lstFolders" Width="200" Height="250" Margin="10,60,531,281"/>
+                    <ListBox x:Name="lstFolders" Width="200" Height="250" Margin="10,60,531,281" MouseDoubleClick="lstFolders_MouseDoubleClick" SelectionChanged="lstFolders_SelectionChanged"/>
                     <ListBox x:Name="lstFiles" Width="200" Height="250" Margin="10,343,531,-2"/>
                 </Grid>
             </GroupBox>
