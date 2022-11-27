@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AIT.PE02.Client.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="820">
+        Title="File Transfer over sockets : client" Height="800" Width="820"
+        ResizeMode="NoResize">
     <ScrollViewer>
         <Grid Height="779">
             <GroupBox Header="Server configuration" HorizontalAlignment="Left" Height="120" Margin="10,10,0,0" VerticalAlignment="Top" Width="770" >
@@ -29,7 +30,7 @@
                     <Button x:Name="btnFolderUp" Content="..." Margin="20,41,541,533" Click="btnFolderUp_Click"/>
                     <Label Height="28" Content="Remote files" Margin="0,315,656,248"/>
                     <ListBox x:Name="lstFolders" Width="200" Height="250" Margin="10,60,531,281" MouseDoubleClick="lstFolders_MouseDoubleClick" SelectionChanged="lstFolders_SelectionChanged"/>
-                    <ListBox x:Name="lstFiles" Width="200" Height="250" Margin="10,343,531,-2" SelectionChanged="lstFiles_SelectionChanged"/>
+                    <ListBox x:Name="lstFiles" Width="200" Height="250" Margin="10,343,531,-2" SelectionChanged="lstFiles_SelectionChanged" MouseDoubleClick="lstFiles_MouseDoubleClick"/>
                 </Grid>
             </GroupBox>
             <GroupBox Header="File info" Height="150" Margin="249,237,31,387">

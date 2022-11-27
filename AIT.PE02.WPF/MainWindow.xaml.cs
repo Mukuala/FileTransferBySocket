@@ -23,7 +23,6 @@ namespace AIT.PE02.WPF
         {
             InitializeComponent();
             StartupConfig();
-
         }
         Socket serverSocket;
         IPEndPoint serverEndpoint;
@@ -60,7 +59,6 @@ namespace AIT.PE02.WPF
             btnStopServer.Visibility = Visibility.Hidden;
             cmbIPs.IsEnabled = true;
             cmbPorts.IsEnabled = true;
-
             CloseTheServer();
         }
 
@@ -139,8 +137,11 @@ namespace AIT.PE02.WPF
 
             instruction = instruction.Replace("##EOM", "").Trim().ToUpper();
 
+            //Gets called when you connect to server
             if (instruction.Length > 7 && instruction.Substring(0, 7) == "CONNECT")
             {
+                #region Connect
+
                 parts = instruction.Split("|*|");
                 if (parts.Length != 2)
                     return "ERROR##EOM";
@@ -152,24 +153,32 @@ namespace AIT.PE02.WPF
                     GetAllSubdirsAndFiles(client.CurrentMap, out subdirlist, out dirfileslist);
                     var stringSubdirs = JsonConvert.SerializeObject(subdirlist);
                     var stringDirfiles = JsonConvert.SerializeObject(dirfileslist);
-                    txbCommunications.Text = $"{parts[1]} ({client.Id}) CONNECTED, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                    txbCommunications.Text = $"{parts[1]} (id={client.Id}) CONNECTED, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                     returnValue = $"CONNECT|*|{parts[1]}|*|{client.Id}|*|{stringSubdirs}|*|{stringDirfiles}|*|{client.CurrentMap}##EOM";
                     return returnValue;
                 }
+                #endregion
             }
+
+            //Gets called when you close or disconnect to server
             else if (instruction.Length > 5 && instruction.Substring(0, 5) == "CLOSE")
             {
+                #region Close
                 parts = instruction.Split("|*|");
                 if (parts.Length != 2)
                     return "ERROR##EOM";
 
                 var client = GetCurrentClient(parts[1]);
-                txbCommunications.Text = $"{client.Name} {client.Id} DISCONNECTED, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                txbCommunications.Text = $"{client.Name} (id={client.Id}) DISCONNECTED, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 ClientCollection.Remove(client);
                 return "CLOSE##EOM";
+                #endregion
             }
+
+            //Gets called when u make a new directory
             else if (instruction.Length > 5 && instruction.Substring(0, 5) == "MKDIR")
             {
+                #region MKDIR
                 parts = instruction.Split("|*|");
                 if (parts.Length != 3)
                     return "ERROR##EOM";
@@ -177,11 +186,15 @@ namespace AIT.PE02.WPF
                 var client = GetCurrentClient(parts[1]);
                 GetAllSubdirsAndFiles(client.CurrentMap, out subdirlist, out dirfileslist);
                 var stringSubdirs = JsonConvert.SerializeObject(subdirlist);
-                txbCommunications.Text = $"{client.Name} ({client.Id}) requested MKDIR {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                txbCommunications.Text = $"{client.Name} (id={client.Id}) requested MKDIR {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 return $"MKDIR|*|{stringSubdirs}|*|{client.CurrentMap}##EOM";
+                #endregion
             }
+
+            //Gets called when you move up in directory
             else if (instruction.Length > 4 && instruction.Substring(0, 4) == "CDUP")
             {
+                #region CDUP
                 string newAP = "";
                 parts = instruction.Split("|*|");
                 if (parts.Length != 2)
@@ -192,12 +205,16 @@ namespace AIT.PE02.WPF
                 var stringSubdirs = JsonConvert.SerializeObject(subdirlist);
                 var stringDirfiles = JsonConvert.SerializeObject(dirfileslist);
                 client.CurrentMap = newAP;
-                txbCommunications.Text = $"{client.Name} ({client.Id}) requested CDUP, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                txbCommunications.Text = $"{client.Name} (id={client.Id}) requested CDUP, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 returnValue = $"CDUP|*|{stringSubdirs}|*|{stringDirfiles}|*|{client.CurrentMap}##EOM";
                 return returnValue;
+                #endregion
             }
+
+            //Gets called when you move down in directory (Enter a child directory)
             else if (instruction.Length > 5 && instruction.Substring(0, 5) == "CDDIR")
             {
+                #region CDDIR
                 string newAP = "";
                 parts = instruction.Split("|*|");
                 if (parts.Length != 3)
@@ -209,12 +226,15 @@ namespace AIT.PE02.WPF
                 var stringSubdirs = JsonConvert.SerializeObject(subdirlist);
                 var stringDirfiles = JsonConvert.SerializeObject(dirfileslist);
                 client.CurrentMap = newAP;
-                txbCommunications.Text = $"{client.Name} ({client.Id}) requested CDDIR {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                txbCommunications.Text = $"{client.Name} (id={client.Id}) requested CDDIR {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 return $"CDDIR|*|{stringSubdirs}|*|{stringDirfiles}|*|{client.CurrentMap}##EOM";
+                #endregion
             }
+
+            //Gets called when "downloading" file from server
             else if (instruction.Length > 3 && instruction.Substring(0, 3) == "GET")
             {
-                
+                #region GET
                 parts = instruction.Split("|*|");
                 if (parts.Length != 3)
                     return "ERROR##EOM";
@@ -223,11 +243,28 @@ namespace AIT.PE02.WPF
                 FileInfo file = new FileInfo(client.CurrentMap + "\\" + parts[2]);
                 FileFTS fileFTS = new FileFTS { Name = file.Name, Fullpath = file.FullName, CreationTime = file.CreationTime, Filesize = file.Length };
                 var fileToSend = JsonConvert.SerializeObject(fileFTS);
-                //var stringFileinfo = JsonConvert.SerializeObject(file);
-                txbCommunications.Text = $"{client.Name} ({client.Id}) requested GET {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                txbCommunications.Text = $"{client.Name} (id={client.Id}) requested GET {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 return $"GET|*|{fileToSend}|*|{client.CurrentMap}##EOM";
+                #endregion
+            }
+            //Gets called when "uploading" file to server
+            else if (instruction.Length > 3 && instruction.Substring(0, 3) == "PUT")
+            {
+                #region PUT
+                parts = instruction.Split("|*|");
+                if (parts.Length != 3)
+                    return "ERROR##EOM";
+
+                var client = GetCurrentClient(parts[1]);
+                var fileFTS = JsonConvert.DeserializeObject<FileFTS>(parts[2]);
+                File.Copy(fileFTS.Fullpath, client.CurrentMap + "/" + fileFTS.Name);
+                GetAllSubdirsAndFiles(client.CurrentMap, out subdirlist, out dirfileslist);
+                var stringDirfiles = JsonConvert.SerializeObject(dirfileslist);
+                txbCommunications.Text = $"{client.Name} (id={client.Id}) requested PUT {fileFTS.Name}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                return $"PUT|*|{stringDirfiles}|*|{client.CurrentMap}##EOM";
 
 
+                #endregion
             }
             return "ERROR##EOM";
         }
@@ -259,6 +296,8 @@ namespace AIT.PE02.WPF
             }
             btnStartServer.Visibility = Visibility.Visible;
             btnStopServer.Visibility = Visibility.Hidden;
+            CreateBasePathIfNotExist();
+
         }
         private void SaveConfig()
         {
@@ -322,6 +361,13 @@ namespace AIT.PE02.WPF
             var parseGuid = Guid.Parse(id);
             var client = ClientCollection.FirstOrDefault(c => c.Id.Equals(parseGuid));
             return client;
+        }
+        private void CreateBasePathIfNotExist()
+        {
+            if (!Directory.Exists(txtBasepath.Text))
+            {
+                Directory.CreateDirectory(txtBasepath.Text);
+            }
         }
     }
 }

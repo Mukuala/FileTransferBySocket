@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AIT.PE02.WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="File Transfer over sockets : server" Height="450" Width="800"
+        ResizeMode="NoResize">
     <Grid>
         <GroupBox Header="Server configuration" HorizontalAlignment="Left" Height="120" Margin="10,10,0,0" VerticalAlignment="Top" Width="770" >
             <Grid HorizontalAlignment="Left" Width="770" Height="110">
@@ -13,7 +14,7 @@
                 <Label Content="IP : " FontSize="14" FontWeight="Bold" HorizontalAlignment="Left" Height="28" Margin="10,10,0,0" VerticalAlignment="Top" Width="31"/>
                 <Label Content="Port : " FontSize="14" FontWeight="Bold" HorizontalAlignment="Left" Height="28" Margin="210,7,0,0" VerticalAlignment="Top" Width="57"/>
                 <Label Content="Base Path: " FontSize="14" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Height="28" Margin="400,10,0,0"/>
-                <TextBox x:Name="txtBasepath" Text="C:\howest" Margin="481,10,20,0" Height="28" VerticalAlignment="Top"/>
+                <TextBox x:Name="txtBasepath" Text="C:\TestServerDir" Margin="481,10,20,0" Height="28" VerticalAlignment="Top" IsEnabled="False"/>
                 <ComboBox x:Name="cmbPorts" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left" Margin="267,9,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="CmbPorts_SelectionChanged"/>
                 <Button x:Name="btnStartServer" Content="START" Background="ForestGreen" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left" Margin="26,55,0,0" VerticalAlignment="Top" Height="28" Width="80" Click="BtnStartServer_Click"/>
                 <Button x:Name="btnStopServer" Content="STOP" Background="Tomato" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left" Margin="111,55,0,0" VerticalAlignment="Top" Height="28" Width="80" Click="BtnStopServer_Click"/>

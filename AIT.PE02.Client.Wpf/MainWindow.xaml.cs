@@ -31,6 +31,7 @@ namespace AIT.PE02.Client.Wpf
         {
             if (string.IsNullOrWhiteSpace(txtUsername.Text))
             {
+                MessageBox.Show("Username required");
                 txtUsername.Focus();
                 return;
             }
@@ -59,6 +60,66 @@ namespace AIT.PE02.Client.Wpf
         {
             CDUP();
         }
+
+        private void lstFolders_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            CDDIR();
+        }
+
+        private void lstFolders_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (lstFolders.SelectedItem != null)
+            {
+                var folderName = lstFolders.SelectedItem.ToString();
+                txbFolderName.Text = folderName;
+                txbFolderParent.Text = Directory.GetParent(txbActivePath.Text + "\\" + folderName).FullName;
+                txbFolderpath.Text = txbActivePath.Text + "\\" + folderName;
+            }
+            else
+            {
+                txbFolderName.Text = "";
+                txbFolderParent.Text = "";
+                txbFolderpath.Text = "";
+            }
+        }
+
+        private void lstFiles_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (lstFiles.SelectedItem != null)
+            {
+                var fileName = lstFiles.SelectedItem.ToString();
+                var file = txbActivePath.Text + "\\" + fileName;
+                FileInfo fileInfo = new FileInfo(file);
+                txbFiledate.Text = fileInfo.CreationTime.ToString();
+                txbFilename.Text = fileInfo.Name;
+                txbFilepath.Text = fileInfo.FullName;
+                txbFilesize.Text = BytesToReadableString(fileInfo.Length);
+            }
+            else
+            {
+                txbFiledate.Text = "";
+                txbFilename.Text = "";
+                txbFilepath.Text = "";
+                txbFilesize.Text = "";
+            }
+        }
+
+        private void btnFileUpload_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                FileInfo file = new FileInfo(openFileDialog.FileName);
+                FileFTS fileToSend = new FileFTS { Name = file.Name, Fullpath = file.FullName, CreationTime = file.CreationTime, Filesize = file.Length };
+                PUT(fileToSend);
+            }
+        }
+
+        private void lstFiles_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            GET();
+        }
+
 
         #endregion
 
@@ -237,23 +298,27 @@ namespace AIT.PE02.Client.Wpf
                 if (response.Contains("ERROR"))
                 {
                     MessageBox.Show("ERROR");
+                    return;
                 }
                 else
                 {
                     var parts = response.Split("|*|");
-                    var file = JsonConvert.DeserializeObject<FileFTS>(parts[1]);
+                    var serverFile = JsonConvert.DeserializeObject<FileFTS>(parts[1]);
 
-                    txbFiledate.Text = file.CreationTime.ToString();
-                    txbFilename.Text = file.Name;
-                    txbFilepath.Text = file.Fullpath;
-                    txbFilesize.Text = file.Filesize.ToString() + " B";
+                    SaveFileDialog saveFileDialog = new SaveFileDialog();
+                    if (saveFileDialog.ShowDialog() == true && saveFileDialog.FileName != serverFile.Fullpath)
+                    {
+                        File.Copy(serverFile.Fullpath, saveFileDialog.FileName);
+                        MessageBox.Show("Download succesful");
+                    }
                 }
             }
         }
-        private void PUT()
+        private void PUT(FileFTS file)
         {
             {
-                string message = $"PUT|*|{txbGuid.Text}|*|{lstFiles.SelectedItem}##EOM";
+                var jsonFile = JsonConvert.SerializeObject(file);
+                string message = $"PUT|*|{txbGuid.Text}|*|{jsonFile}##EOM";
                 string response = SendMessageToServer(message);
                 if (!string.IsNullOrWhiteSpace(response))
                 {
@@ -265,6 +330,7 @@ namespace AIT.PE02.Client.Wpf
                     else
                     {
                         var parts = response.Split("|*|");
+                        lstFiles.ItemsSource = (ICollection)JsonConvert.DeserializeObject(parts[1]);
                     }
                 }
             }
@@ -274,14 +340,18 @@ namespace AIT.PE02.Client.Wpf
         {
             if (isConnected)
             {
+                cmbPorts.IsEnabled = false;
                 btnDisconnect.Visibility = Visibility.Visible;
                 btnConnect.Visibility = Visibility.Hidden;
                 grdFTS.Visibility = Visibility.Visible;
                 txtIP.IsEnabled = false;
                 txtUsername.IsEnabled = false;
+                btnFileUpload.IsEnabled = true;
             }
             else
             {
+                cmbPorts.IsEnabled = true;
+                btnFileUpload.IsEnabled = false;
                 btnDisconnect.Visibility = Visibility.Hidden;
                 btnConnect.Visibility = Visibility.Visible;
                 txtIP.IsEnabled = true;
@@ -299,60 +369,15 @@ namespace AIT.PE02.Client.Wpf
                 txbFilesize.Text = "";
             }
         }
-
-        private void lstFolders_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private string BytesToReadableString(long byteCount)
         {
-            CDDIR();
-        }
-
-        private void lstFolders_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (lstFolders.SelectedItem != null)
-            {
-                var folderName = lstFolders.SelectedItem.ToString();
-                txbFolderName.Text = folderName;
-                txbFolderParent.Text = Directory.GetParent(txbActivePath.Text + "\\" + folderName).FullName;
-                txbFolderpath.Text = txbActivePath.Text + "\\" + folderName;
-            }
-            else
-            {
-                txbFolderName.Text = "";
-                txbFolderParent.Text = "";
-                txbFolderpath.Text = "";
-            }
-        }
-
-        private void lstFiles_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (lstFiles.SelectedItem != null)
-            {
-                //var fileName = lstFiles.SelectedItem.ToString();
-                //var file = txbActivePath.Text + "\\" + fileName;
-                //FileInfo fileInfo = new FileInfo(file);
-                //txbFiledate.Text = fileInfo.CreationTime.ToString();
-                //txbFilename.Text = fileInfo.Name;
-                //txbFilepath.Text = fileInfo.FullName;
-                //txbFilesize.Text = fileInfo.Length.ToString();
-                GET();
-            }
-            else
-            {
-                txbFiledate.Text = "";
-                txbFilename.Text = "";
-                txbFilepath.Text = "";
-                txbFilesize.Text = "";
-            }
-        }
-
-        private void btnFileUpload_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
-            {
-                FileInfo file = new FileInfo(openFileDialog.FileName);
-                //PUT()
-            }
-
+            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
+            if (byteCount == 0)
+                return "0" + suf[0];
+            long bytes = Math.Abs(byteCount);
+            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+            return (Math.Sign(byteCount) * num).ToString() + suf[place];
         }
     }
 }
