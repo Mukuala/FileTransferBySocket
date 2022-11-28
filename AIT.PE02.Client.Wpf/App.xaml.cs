@@ -13,11 +13,6 @@ namespace AIT.PE02.Client.Wpf
     /// </summary>
     public partial class App : Application
     {
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            base.OnStartup(e);
-            MainWindow secondClient = new MainWindow();
-            secondClient.Show();
-        }
+
     }
 }
