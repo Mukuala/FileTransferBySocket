@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AIT.PE02.Client.Wpf"
         mc:Ignorable="d"
-        Title="Add new map" Height="100" Width="350">
+        Title="Add new folder" Height="100" Width="350"
+        ResizeMode="NoResize">
     <Grid>
         <StackPanel Orientation="Horizontal">
-            <Label Content="Map name" Height="28"/>
-            <TextBox Name="txtSomeBox" Width="200" Height="28" />
+            <Label Content="Folder name" Height="28"/>
+            <TextBox Name="txtSomeBox" Width="200" Height="28" Padding="5"/>
             <Button Name="btnSaveData" Click="btnSaveData_Click" Content="Save" Height="28" />
         </StackPanel>
     </Grid>

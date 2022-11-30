@@ -13,6 +13,9 @@ namespace AIT.PE02.Client.Wpf
     /// </summary>
     public partial class App : Application
     {
-
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+        }
     }
 }

@@ -10,9 +10,6 @@ namespace AIT.PE02.Server.Core.Helpers
     {
         public static List<string> GetActiveIP4s()
         {
-            // hier wordt een LIST gemaakt met alle IP nummers van 
-            // je eigen actieve NICs
-            // manueel wordt het loopback adres toegevoegd
             List<string> activeIps = new List<string>();
             activeIps.Add("127.0.0.1");
             var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -25,24 +22,41 @@ namespace AIT.PE02.Server.Core.Helpers
             }
             return activeIps;
         }
-        public static bool PortInUse(int port)
+        //public static bool PortInUse(int port)
+        //{
+        //    bool inUse = false;
+        //    IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
+        //    IPEndPoint[] ipEndPoints = ipProperties.GetActiveTcpListeners();
+        //    foreach (IPEndPoint endPoint in ipEndPoints)
+        //    {
+        //        if (endPoint.Port == port)
+        //        {
+        //            inUse = true;
+        //            break;
+        //        }
+        //    }
+        //    return inUse;
+        //}
+        public static List<int> AllAvailblePorts(List<int> ports)
         {
-            // Ter info
-            // Deze methode gebruiken we niet in deze app maar eigenlijk kan je best even nakijken
-            // of de poort(en) die je in je eigen app gaat gebruiken ondertussen al niet door een
-            // ander proces in gebruik is ...
-            bool inUse = false;
             IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
             IPEndPoint[] ipEndPoints = ipProperties.GetActiveTcpListeners();
-            foreach (IPEndPoint endPoint in ipEndPoints)
+            List<int> ipEndPointsPorts = GetAllPortsFromIpEndpoints(ipEndPoints);
+
+
+            var usedPorts = ports.Intersect(ipEndPointsPorts).ToList();
+            ports.RemoveAll(x => usedPorts.Contains(x));
+            return ports;
+        }
+
+        private static List<int> GetAllPortsFromIpEndpoints(IPEndPoint[] ipEndPoints)
+        {
+            List<int> ports = new List<int>();
+            foreach (var endPoint in ipEndPoints)
             {
-                if (endPoint.Port == port)
-                {
-                    inUse = true;
-                    break;
-                }
+                ports.Add(endPoint.Port);
             }
-            return inUse;
+            return ports;
         }
     }
 }

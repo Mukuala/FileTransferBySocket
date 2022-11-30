@@ -46,19 +46,11 @@ namespace AIT.PE02.WPF
 
         private void BtnStartServer_Click(object sender, RoutedEventArgs e)
         {
-            btnStartServer.Visibility = Visibility.Hidden;
-            btnStopServer.Visibility = Visibility.Visible;
-            cmbIPs.IsEnabled = false;
-            cmbPorts.IsEnabled = false;
             StartTheServer();
             StartListening();
         }
         private void BtnStopServer_Click(object sender, RoutedEventArgs e)
         {
-            btnStartServer.Visibility = Visibility.Visible;
-            btnStopServer.Visibility = Visibility.Hidden;
-            cmbIPs.IsEnabled = true;
-            cmbPorts.IsEnabled = true;
             CloseTheServer();
         }
 
@@ -66,6 +58,11 @@ namespace AIT.PE02.WPF
         private void StartTheServer()
         {
             serverOnline = true;
+            btnStartServer.Visibility = Visibility.Hidden;
+            btnStopServer.Visibility = Visibility.Visible;
+            cmbIPs.IsEnabled = false;
+            cmbPorts.IsEnabled = false;
+
         }
         private void CloseTheServer()
         {
@@ -73,19 +70,26 @@ namespace AIT.PE02.WPF
             try
             {
                 if (serverSocket != null)
-                    serverSocket.Close();
+                    //serverSocket.Disconnect(true);
+                serverSocket.Close(0);
             }
-            catch
-            { }
+            catch (Exception error)
+            { MessageBox.Show(error.Message); }
             serverSocket = null;
             serverEndpoint = null;
+            btnStartServer.Visibility = Visibility.Visible;
+            btnStopServer.Visibility = Visibility.Hidden;
+            cmbIPs.IsEnabled = true;
+            cmbPorts.IsEnabled = true;
+
         }
         private void StartListening()
         {
             IPAddress ip = IPAddress.Parse(cmbIPs.SelectedItem.ToString());
             int port = int.Parse(cmbPorts.SelectedItem.ToString());
             serverEndpoint = new IPEndPoint(ip, port);
-            serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            serverSocket = new Socket(serverEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            serverSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
             try
             {
@@ -105,7 +109,8 @@ namespace AIT.PE02.WPF
             }
             catch (Exception error)
             {
-                MessageBox.Show(error.Message, "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CloseTheServer();
             }
         }
 
@@ -153,7 +158,7 @@ namespace AIT.PE02.WPF
                     GetAllSubdirsAndFiles(client.CurrentMap, out subdirlist, out dirfileslist);
                     var stringSubdirs = JsonConvert.SerializeObject(subdirlist);
                     var stringDirfiles = JsonConvert.SerializeObject(dirfileslist);
-                    txbCommunications.Text = $"{parts[1]} (id={client.Id}) CONNECTED, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                    txbCommunications.Text = $"{DateTime.Now:dd/MM HH:mm:ss} {client.Name} (ID={client.Id.ToString().ToUpper()}) CONNECTED, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                     returnValue = $"CONNECT|*|{parts[1]}|*|{client.Id}|*|{stringSubdirs}|*|{stringDirfiles}|*|{client.CurrentMap}##EOM";
                     return returnValue;
                 }
@@ -169,7 +174,7 @@ namespace AIT.PE02.WPF
                     return "ERROR##EOM";
 
                 var client = GetCurrentClient(parts[1]);
-                txbCommunications.Text = $"{client.Name} (id={client.Id}) DISCONNECTED, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                txbCommunications.Text = $"{DateTime.Now:dd/MM HH:mm:ss} {client.Name} (ID={client.Id.ToString().ToUpper()}) DISCONNECTED, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 ClientCollection.Remove(client);
                 return "CLOSE##EOM";
                 #endregion
@@ -186,7 +191,7 @@ namespace AIT.PE02.WPF
                 var client = GetCurrentClient(parts[1]);
                 GetAllSubdirsAndFiles(client.CurrentMap, out subdirlist, out dirfileslist);
                 var stringSubdirs = JsonConvert.SerializeObject(subdirlist);
-                txbCommunications.Text = $"{client.Name} (id={client.Id}) requested MKDIR {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                txbCommunications.Text = $"{DateTime.Now:dd/MM HH:mm:ss}     {client.Name} (ID={client.Id.ToString().ToUpper()}) requested MKDIR {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 return $"MKDIR|*|{stringSubdirs}|*|{client.CurrentMap}##EOM";
                 #endregion
             }
@@ -205,7 +210,7 @@ namespace AIT.PE02.WPF
                 var stringSubdirs = JsonConvert.SerializeObject(subdirlist);
                 var stringDirfiles = JsonConvert.SerializeObject(dirfileslist);
                 client.CurrentMap = newAP;
-                txbCommunications.Text = $"{client.Name} (id={client.Id}) requested CDUP, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                txbCommunications.Text = $"{DateTime.Now:dd/MM HH:mm:ss} {client.Name} (ID={client.Id.ToString().ToUpper()}) requested CDUP, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 returnValue = $"CDUP|*|{stringSubdirs}|*|{stringDirfiles}|*|{client.CurrentMap}##EOM";
                 return returnValue;
                 #endregion
@@ -226,7 +231,7 @@ namespace AIT.PE02.WPF
                 var stringSubdirs = JsonConvert.SerializeObject(subdirlist);
                 var stringDirfiles = JsonConvert.SerializeObject(dirfileslist);
                 client.CurrentMap = newAP;
-                txbCommunications.Text = $"{client.Name} (id={client.Id}) requested CDDIR {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                txbCommunications.Text = $"{DateTime.Now:dd/MM HH:mm:ss} {client.Name} (ID={client.Id.ToString().ToUpper()}) requested CDDIR {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 return $"CDDIR|*|{stringSubdirs}|*|{stringDirfiles}|*|{client.CurrentMap}##EOM";
                 #endregion
             }
@@ -243,7 +248,7 @@ namespace AIT.PE02.WPF
                 FileInfo file = new FileInfo(client.CurrentMap + "\\" + parts[2]);
                 FileFTS fileFTS = new FileFTS { Name = file.Name, Fullpath = file.FullName, CreationTime = file.CreationTime, Filesize = file.Length };
                 var fileToSend = JsonConvert.SerializeObject(fileFTS);
-                txbCommunications.Text = $"{client.Name} (id={client.Id}) requested GET {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                txbCommunications.Text = $"{DateTime.Now:dd/MM HH:mm:ss} {client.Name} (ID={client.Id.ToString().ToUpper()}) requested GET {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 return $"GET|*|{fileToSend}|*|{client.CurrentMap}##EOM";
                 #endregion
             }
@@ -260,7 +265,7 @@ namespace AIT.PE02.WPF
                 File.Copy(fileFTS.Fullpath, client.CurrentMap + "/" + fileFTS.Name);
                 GetAllSubdirsAndFiles(client.CurrentMap, out subdirlist, out dirfileslist);
                 var stringDirfiles = JsonConvert.SerializeObject(dirfileslist);
-                txbCommunications.Text = $"{client.Name} (id={client.Id}) requested PUT {fileFTS.Name}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                txbCommunications.Text = $"{DateTime.Now:dd/MM HH:mm:ss} {client.Name} (ID={client.Id.ToString().ToUpper()}) requested PUT {fileFTS.Name}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 return $"PUT|*|{stringDirfiles}|*|{client.CurrentMap}##EOM";
 
 
@@ -272,8 +277,14 @@ namespace AIT.PE02.WPF
 
         private void StartupConfig()
         {
+            List<int> allPorts = new List<int>();
             cmbIPs.ItemsSource = IPv4Helper.GetActiveIP4s();
-            for (int port = 49200; port <= 49500; port++)
+            for (int port = 49000; port <= 49500; port++)
+            {
+                allPorts.Add(port);
+            }
+            var availablePorts = IPv4Helper.AllAvailblePorts(allPorts);
+            foreach (var port in availablePorts)
             {
                 cmbPorts.Items.Add(port);
             }

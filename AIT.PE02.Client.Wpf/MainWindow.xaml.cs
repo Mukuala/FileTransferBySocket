@@ -1,14 +1,16 @@
-﻿using System;
-using System.Text;
-using System.Windows;
-using System.Net;
-using System.Net.Sockets;
-using AIT.PE02.Client.Core.Helpers;
-using System.IO;
-using Newtonsoft.Json;
-using System.Collections;
+﻿using AIT.PE02.Client.Core.Helpers;
 using AIT.PE02.Server.Core.Entities;
 using Microsoft.Win32;
+using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace AIT.PE02.Client.Wpf
 {
@@ -44,6 +46,8 @@ namespace AIT.PE02.Client.Wpf
         private void btnAddNewMap_Click(object sender, RoutedEventArgs e)
         {
             MKDIRModal modalWindow = new MKDIRModal();
+            modalWindow.Owner = this;
+            modalWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             modalWindow.ShowDialog();
             if (!modalWindow.IsActive)
             {
@@ -63,10 +67,20 @@ namespace AIT.PE02.Client.Wpf
 
         private void lstFolders_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            CDDIR();
+            DependencyObject obj = (DependencyObject)e.OriginalSource;
+            //Check if double click is on listboxitem, cause event gets triggered with every double click anywhere inside listbox
+            while (obj != null && obj != lstFolders)
+            {
+                if (obj.GetType() == typeof(ListBoxItem))
+                {
+                    CDDIR();
+                    break;
+                }
+                obj = VisualTreeHelper.GetParent(obj);
+            }
         }
 
-        private void lstFolders_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void lstFolders_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (lstFolders.SelectedItem != null)
             {
@@ -83,7 +97,7 @@ namespace AIT.PE02.Client.Wpf
             }
         }
 
-        private void lstFiles_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void lstFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (lstFiles.SelectedItem != null)
             {
@@ -107,6 +121,7 @@ namespace AIT.PE02.Client.Wpf
         private void btnFileUpload_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Image Files| *.jpg; *.jpeg; *.png|txt files (*.txt)|*.txt";
             if (openFileDialog.ShowDialog() == true)
             {
                 FileInfo file = new FileInfo(openFileDialog.FileName);
@@ -117,7 +132,17 @@ namespace AIT.PE02.Client.Wpf
 
         private void lstFiles_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            GET();
+            DependencyObject obj = (DependencyObject)e.OriginalSource;
+            //Check if double click is on listboxitem, cause event gets triggered with every double click anywhere inside listbox
+            while (obj != null && obj != lstFolders)
+            {
+                if (obj.GetType() == typeof(ListBoxItem))
+                {
+                    GET();
+                    break;
+                }
+                obj = VisualTreeHelper.GetParent(obj);
+            }
         }
 
 
@@ -160,22 +185,15 @@ namespace AIT.PE02.Client.Wpf
         }
         private void StartupConfig()
         {
-            for (int port = 49200; port <= 49500; port++)
+            for (int port = 49000; port <= 49500; port++)
             {
                 cmbPorts.Items.Add(port);
             }
-            AppConfig.GetConfig(out string serverIP, out int communicationPort);
-            txtIP.Text = serverIP;
-            try
-            {
-                cmbPorts.SelectedItem = communicationPort;
-            }
-            catch
-            {
-                cmbPorts.SelectedItem = 49200;
-            }
-
+            txtIP.Text = "127.0.0.1";
+            cmbPorts.SelectedItem = 49200;
+            DoVisuals(false);
         }
+
 
         private void Connect()
         {

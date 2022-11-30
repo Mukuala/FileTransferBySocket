@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AIT.PE02.WPF"
         mc:Ignorable="d"
-        Title="File Transfer over sockets : server" Height="450" Width="800"
-        ResizeMode="NoResize">
+        Title="File Transfer over sockets : server" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="120"/>
@@ -18,22 +17,24 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <StackPanel Height="28" Orientation="Horizontal" Grid.Row="0">
-                    <Label Content="IP : " FontSize="14" FontWeight="Bold"   Width="31"/>
+                <StackPanel Height="28" Orientation="Horizontal" Grid.Row="0" Margin="5">
+                    <Label Content="IP : " FontSize="14" FontWeight="Bold"/>
                     <ComboBox x:Name="cmbIPs" FontSize="14" FontWeight="Bold"  Width="120" SelectionChanged="CmbIPs_SelectionChanged"/>
-                    <Label Content="Port : " FontSize="14" FontWeight="Bold" Width="57"/>
+                    <Label Content="Port : " FontSize="14" FontWeight="Bold" />
                     <ComboBox x:Name="cmbPorts" FontSize="14" FontWeight="Bold" Width="120" SelectionChanged="CmbPorts_SelectionChanged"/>
-                    <Label Content="Base Path: " FontSize="14" FontWeight="Bold"  />
+                    <Label Content="Base Path : " FontSize="14" FontWeight="Bold"  />
                     <TextBox x:Name="txtBasepath" Text="C:\TestServerDir" IsEnabled="False" Width="120" Padding="5" VerticalAlignment="Center"/>
                 </StackPanel>
-                <StackPanel Grid.Row="1" Height="28" Orientation="Horizontal">
+                <StackPanel Grid.Row="1" Height="28" Orientation="Horizontal" Margin="5">
                     <Button x:Name="btnStartServer" Content="START" Background="ForestGreen" Foreground="White" FontSize="14" FontWeight="Bold" Width="80" Click="BtnStartServer_Click"/>
                     <Button x:Name="btnStopServer" Content="STOP" Background="Tomato" Foreground="White" FontSize="14" FontWeight="Bold" Width="80" Click="BtnStopServer_Click"/>
                 </StackPanel>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Communications" Margin="5" Grid.Row="1"  >
-            <TextBlock Padding="5" x:Name="txbCommunications"/>
+        <GroupBox Header="Communications" Margin="5" Grid.Row="1">
+            <ScrollViewer>
+                <TextBlock ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Hidden" Padding="5" x:Name="txbCommunications"/>
+            </ScrollViewer>
         </GroupBox>
     </Grid>
 </Window>
