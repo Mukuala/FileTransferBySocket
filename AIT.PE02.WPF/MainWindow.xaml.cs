@@ -191,7 +191,7 @@ namespace AIT.PE02.WPF
                 var client = GetCurrentClient(parts[1]);
                 GetAllSubdirsAndFiles(client.CurrentMap, out subdirlist, out dirfileslist);
                 var stringSubdirs = JsonConvert.SerializeObject(subdirlist);
-                txbCommunications.Text = $"{DateTime.Now:dd/MM HH:mm:ss}     {client.Name} (ID={client.Id.ToString().ToUpper()}) requested MKDIR {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
+                txbCommunications.Text = $"{DateTime.Now:dd/MM HH:mm:ss} {client.Name} (ID={client.Id.ToString().ToUpper()}) requested MKDIR {parts[2]}, AP = {client.CurrentMap}\n" + txbCommunications.Text;
                 return $"MKDIR|*|{stringSubdirs}|*|{client.CurrentMap}##EOM";
                 #endregion
             }

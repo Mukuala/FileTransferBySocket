@@ -32,8 +32,8 @@
             </Grid>
         </GroupBox>
         <GroupBox Header="Communications" Margin="5" Grid.Row="1">
-            <ScrollViewer>
-                <TextBlock ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Hidden" Padding="5" x:Name="txbCommunications"/>
+            <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <TextBlock Padding="5" x:Name="txbCommunications"/>
             </ScrollViewer>
         </GroupBox>
     </Grid>

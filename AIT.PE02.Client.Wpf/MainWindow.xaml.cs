@@ -397,5 +397,11 @@ namespace AIT.PE02.Client.Wpf
             double num = Math.Round(bytes / Math.Pow(1024, place), 1);
             return (Math.Sign(byteCount) * num).ToString() + suf[place];
         }
+
+        private void btnOpenNewClientWindow_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow clientWindow = new MainWindow();
+            clientWindow.Show();
+        }
     }
 }

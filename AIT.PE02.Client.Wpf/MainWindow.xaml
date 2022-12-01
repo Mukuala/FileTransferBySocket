@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:AIT.PE02.Client.Wpf"
         mc:Ignorable="d"
         Title="File Transfer over sockets : client" Height="800" Width="820">
-    <ScrollViewer>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
@@ -31,6 +31,7 @@
                         <Button Padding="5" Margin="0,0,20,0" x:Name="btnDisconnect" Content="Disconnect" Background="Tomato" Foreground="White" FontSize="14" FontWeight="Bold" Height="30"  Click="btnDisconnect_Click"/>
                         <Label Height="30" Content="ID : " FontWeight="Bold" />
                         <TextBlock Padding="5" x:Name="txbGuid" Background="Beige" Height="30" Width="300" VerticalAlignment="Center"/>
+                        <Button Padding="5" x:Name="btnOpenNewClientWindow" Content="Open new client window" Margin="30,0,0,0" Click="btnOpenNewClientWindow_Click"/>
                     </StackPanel>
                 </Grid>
             </GroupBox>
