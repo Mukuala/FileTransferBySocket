@@ -54,7 +54,6 @@ namespace AIT.PE02.WPF
             CloseTheServer();
         }
 
-
         private void StartTheServer()
         {
             serverOnline = true;
@@ -62,7 +61,6 @@ namespace AIT.PE02.WPF
             btnStopServer.Visibility = Visibility.Visible;
             cmbIPs.IsEnabled = false;
             cmbPorts.IsEnabled = false;
-
         }
         private void CloseTheServer()
         {
@@ -81,7 +79,6 @@ namespace AIT.PE02.WPF
             btnStopServer.Visibility = Visibility.Hidden;
             cmbIPs.IsEnabled = true;
             cmbPorts.IsEnabled = true;
-
         }
         private void StartListening()
         {

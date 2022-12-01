@@ -134,7 +134,7 @@ namespace AIT.PE02.Client.Wpf
         {
             DependencyObject obj = (DependencyObject)e.OriginalSource;
             //Check if double click is on listboxitem, cause event gets triggered with every double click anywhere inside listbox
-            while (obj != null && obj != lstFolders)
+            while (obj != null && obj != lstFiles)
             {
                 if (obj.GetType() == typeof(ListBoxItem))
                 {
@@ -324,6 +324,10 @@ namespace AIT.PE02.Client.Wpf
                     var serverFile = JsonConvert.DeserializeObject<FileFTS>(parts[1]);
 
                     SaveFileDialog saveFileDialog = new SaveFileDialog();
+                    saveFileDialog.FileName = Path.GetFileName(serverFile.Fullpath);
+                    saveFileDialog.DefaultExt = Path.GetExtension(serverFile.Fullpath);
+                    saveFileDialog.AddExtension = true;
+
                     if (saveFileDialog.ShowDialog() == true && saveFileDialog.FileName != serverFile.Fullpath)
                     {
                         File.Copy(serverFile.Fullpath, saveFileDialog.FileName);
